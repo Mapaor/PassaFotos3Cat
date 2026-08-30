@@ -1,0 +1,7 @@
+module MyApp
+Main 254.0 Main.qml
+IoPanel 1.0 components/IoPanel.qml
+ConfigPanel 1.0 components/ConfigPanel.qml
+ActionPanel 1.0 components/ActionPanel.qml
+StatusPanel 1.0 components/StatusPanel.qml
+AppPopups 1.0 components/AppPopups.qml

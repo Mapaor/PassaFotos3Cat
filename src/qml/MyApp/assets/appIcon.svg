@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="512"
+     height="512"
+     viewBox="0 0 512 512">
+
+  <!-- Fons rosa -->
+  <rect
+    x="48"
+    y="48"
+    width="416"
+    height="416"
+    rx="55"
+    fill="#e9456c"
+  />
+
+  <!-- Grid 2x2 centrat -->
+  <rect x="128" y="128" width="112" height="112" rx="25" fill="#ffffff"/>
+  <rect x="272" y="128" width="112" height="112" rx="25" fill="#ffffff"/>
+  <rect x="128" y="272" width="112" height="112" rx="25" fill="#ffffff"/>
+  <rect x="272" y="272" width="112" height="112" rx="25" fill="#ffffff"/>
+
+</svg>
