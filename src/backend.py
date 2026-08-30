@@ -3,6 +3,8 @@ import subprocess
 import threading
 import json
 import tempfile
+import time
+import glob
 from urllib.parse import unquote
 # pyrefly: ignore [missing-import]
 from PySide6.QtCore import QObject, Slot, Signal
@@ -169,7 +171,15 @@ class VideoConverter(QObject):
         images_data, photo_duration, transition_duration, zoom_end
     ):
         try:
-            output_path = os.path.join(tempfile.gettempdir(), "passafotos_preview.mp4")
+            # Eliminar previews antigues que no estiguin bloquejades pel reproductor
+            temp_dir = tempfile.gettempdir()
+            for old_file in glob.glob(os.path.join(temp_dir, "passafotos_preview_*.mp4")):
+                try:
+                    os.remove(old_file)
+                except OSError:
+                    pass
+
+            output_path = os.path.join(temp_dir, f"passafotos_preview_{int(time.time()*1000)}.mp4")
             
             # Calculate total duration for progress bar
             num_images = len(images_data)
