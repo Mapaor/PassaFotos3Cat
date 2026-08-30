@@ -2,6 +2,17 @@
 
 Una app feta amb PySide6 (Python i Qt6) que desplega una UI moderna per utilitzar ffmpeg internament amb l'objectiu d'agafar imatges com a input i generar un passa-fotos o Kern Burns effect, és a dir un vídeo on es va fent un subtil zoom a cada imatge i es canvia d'imatge a imatge per fosa.
 
+<img width="959" height="539" alt="pf-0" src="https://github.com/user-attachments/assets/f88687d0-998f-406d-8c28-07cd54724202" />
+
+<details><summary>Més captures</summary>
+
+<img width="494" height="241" alt="pf-2" src="https://github.com/user-attachments/assets/e2d78493-2dc2-411f-8c4b-a6316ce96ec0" />
+
+<img width="959" height="503" alt="pf-3" src="https://github.com/user-attachments/assets/61029b52-df1d-40c6-947e-17f9241e7f87" />
+
+
+</details>
+
 ## Estructura
 
 - `src/main.py` — Des d'on s'executa la app
