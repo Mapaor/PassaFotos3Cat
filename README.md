@@ -7,6 +7,7 @@ Una app feta amb PySide6 (Python i Qt6) que desplega una UI moderna per utilitza
 <details><summary>Més captures</summary>
 
 <img width="494" height="241" alt="pf-2" src="https://github.com/user-attachments/assets/e2d78493-2dc2-411f-8c4b-a6316ce96ec0" />
+<img width="959" height="503" alt="pf-1" src="https://github.com/user-attachments/assets/531270d6-b482-40f5-aeea-4ad60c863727" />
 
 <img width="959" height="503" alt="pf-3" src="https://github.com/user-attachments/assets/61029b52-df1d-40c6-947e-17f9241e7f87" />
 
