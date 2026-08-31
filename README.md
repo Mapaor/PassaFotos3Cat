@@ -14,6 +14,15 @@ Una app feta amb PySide6 (Python i Qt6) que desplega una UI moderna per utilitza
 
 </details>
 
+## Com utilitzar la app
+
+Descarregar el ZIP de Realeases.
+<img width="1376" height="877" alt="image" src="https://github.com/user-attachments/assets/ab50dce6-de3d-489e-886c-ac8a9a7ee372" />
+
+<img width="1241" height="517" alt="image" src="https://github.com/user-attachments/assets/34a92c7b-be26-4cfa-8ae9-f32666bde951" />
+
+I després descomprimir l'arxiu i executar el .exe, pots guardar-te la carpeta (`.exe` + carpeta `_internal`) a on vulguis.
+``
 ## Estructura
 
 - `src/main.py` — Des d'on s'executa la app
