@@ -22,7 +22,7 @@ Descarregar el ZIP de Realeases.
 <img width="1241" height="517" alt="image" src="https://github.com/user-attachments/assets/34a92c7b-be26-4cfa-8ae9-f32666bde951" />
 
 I després descomprimir l'arxiu i executar el .exe, pots guardar-te la carpeta (`.exe` + carpeta `_internal`) a on vulguis.
-``
+
 ## Estructura
 
 - `src/main.py` — Des d'on s'executa la app
