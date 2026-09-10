@@ -75,7 +75,7 @@ Rectangle {
                     Layout.fillWidth: true
                     from: 1.0
                     to: 15.0
-                    value: 5.0
+                    value: 4.0
                     stepSize: 0.5
                 }
             }
@@ -125,7 +125,7 @@ Rectangle {
                     id: tailDurationSlider
                     Layout.fillWidth: true
                     from: 1.0
-                    to: 5.0
+                    to: 10.0
                     value: 2.0
                     stepSize: 1.0
                 }
