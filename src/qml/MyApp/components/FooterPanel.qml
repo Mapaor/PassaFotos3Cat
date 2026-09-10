@@ -14,6 +14,7 @@ Rectangle {
     property bool canConvert: false
     property alias outputName: nameEntry.text
     property string outputDir: ""
+    property alias currentStatusText: statusText.text
 
     signal previewClicked
     signal convertClicked
@@ -109,13 +110,54 @@ Rectangle {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                Text {
-                    id: statusText
-                    text: "Llest per generar"
-                    color: "#969798"
-                    font.pixelSize: 13
-                    elide: Text.ElideRight
+                Item {
                     Layout.fillWidth: true
+                    implicitHeight: Math.max(statusText.implicitHeight, 30)
+
+                    Text {
+                        id: statusText
+                        text: "Llest per generar"
+                        color: "#969798"
+                        font.pixelSize: 13
+                        elide: Text.ElideRight
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: Math.min(implicitWidth, parent.width - (openFolderBtn.visible ? openFolderBtn.width + 10 : 0))
+
+                        SequentialAnimation on opacity {
+                            running: statusText.text.indexOf("Preparant") !== -1
+                            loops: Animation.Infinite
+                            NumberAnimation { to: 0.3; duration: 800; easing.type: Easing.InOutSine }
+                            NumberAnimation { to: 1.0; duration: 800; easing.type: Easing.InOutSine }
+                        }
+
+                        onTextChanged: {
+                            if (statusText.text.indexOf("Preparant") === -1) {
+                                statusText.opacity = 1.0;
+                            }
+                        }
+                    }
+                    Button {
+                        id: openFolderBtn
+                        visible: statusText.text.indexOf("Vídeo desat a:") !== -1
+                        anchors.left: statusText.right
+                        anchors.leftMargin: 5
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: {
+                            var path = statusText.text.substring(statusText.text.indexOf(":") + 1).trim();
+                            videoConverter.open_and_select_file(path);
+                        }
+                        icon.source: "../assets/folder.svg"
+                        icon.color: "#969798"
+                        icon.width: 20
+                        icon.height: 20
+                        width: 30
+                        height: 30
+                        background: Rectangle {
+                            color: parent.down ? "#969798" : (parent.hovered ? "#d7d7d5" : "transparent")
+                            radius: 4
+                        }
+                    }
                 }
                 RowLayout {
                     Layout.fillWidth: true
