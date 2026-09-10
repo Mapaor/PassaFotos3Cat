@@ -31,6 +31,15 @@ class VideoConverter(QObject):
     def __init__(self):
         super().__init__()
         self.abort_event = threading.Event()
+        
+        # Setup specific temp directory and clean it up on startup
+        self.temp_dir = os.path.join(tempfile.gettempdir(), "passafotos3cat")
+        os.makedirs(self.temp_dir, exist_ok=True)
+        for old_file in glob.glob(os.path.join(self.temp_dir, "*.mp4")):
+            try:
+                os.remove(old_file)
+            except OSError:
+                pass
 
     @Slot(str, str, str, float, float, float, float)
     def convert_slideshow(
@@ -80,7 +89,7 @@ class VideoConverter(QObject):
             
             num_images = len(images_data)
             ffmpeg_bin = get_ffmpeg_path()
-            temp_dir = tempfile.gettempdir()
+            temp_dir = self.temp_dir
             temp_videos = []
             
             if num_images == 1:
@@ -199,7 +208,7 @@ class VideoConverter(QObject):
     ):
         try:
             self.abort_event.clear()
-            temp_dir = tempfile.gettempdir()
+            temp_dir = self.temp_dir
             for old_file in glob.glob(os.path.join(temp_dir, "passafotos_preview_*.mp4")):
                 try: os.remove(old_file)
                 except OSError: pass
