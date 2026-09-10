@@ -5,6 +5,7 @@ import json
 import tempfile
 import time
 import glob
+import concurrent.futures
 from urllib.parse import unquote
 # pyrefly: ignore [missing-import]
 from PySide6.QtCore import QObject, Slot, Signal
@@ -98,35 +99,57 @@ class VideoConverter(QObject):
                 total_duration = (num_images * photo_duration) + ((num_images - 1) * transition_duration) + tail_duration
             
             # Phase 1: Python rendering
+            max_workers = min(4, max(1, (os.cpu_count() or 2) - 1))
+            tasks = []
+            total_frames_overall = 0
+            
             for i, img in enumerate(images_data):
-                if self.abort_event.is_set():
-                    break
-                    
-                temp_vid = os.path.join(temp_dir, f"passafotos_temp_{int(time.time()*1000)}_{i}.mp4")
+                temp_vid = os.path.join(self.temp_dir, f"passafotos_temp_{int(time.time()*1000)}_{i}.mp4")
                 temp_videos.append(temp_vid)
                 
                 dur = photo_duration if num_images == 1 else (photo_duration + transition_duration if i == 0 or i == num_images - 1 else photo_duration + 2 * transition_duration)
                 if i == num_images - 1:
                     dur += tail_duration
-                total_frames = int(dur * FPS)
+                frames = int(dur * FPS)
+                total_frames_overall += frames
+                tasks.append({"img": img, "out": temp_vid, "dur": dur, "frames": frames})
                 
-                def progress_cb(frame_idx, idx=i):
-                    base_progress = (idx / num_images)
-                    current_progress = (frame_idx / max(1, total_frames)) * (1.0 / num_images)
-                    self.progressUpdated.emit(base_progress + current_progress, "Generant frames amb QPainter (1/2)")
-                
+            rendered_frames = [0]
+            progress_lock = threading.Lock()
+            
+            def worker(task):
+                if self.abort_event.is_set():
+                    return
+                    
+                def progress_cb(frame_idx):
+                    with progress_lock:
+                        rendered_frames[0] += 1
+                        if total_frames_overall > 0:
+                            progress = rendered_frames[0] / total_frames_overall
+                            self.progressUpdated.emit(progress, "Generant frames amb QPainter (1/2)")
+                            
                 render_video_clip(
-                    image_path=img["path"], out_path=temp_vid, ffmpeg_path=ffmpeg_bin,
-                    width=OUTPUT_WIDTH, height=OUTPUT_HEIGHT, fps=FPS, duration=dur,
-                    zoom_end=zoom_end, crop_x=img.get("crop_x", 0.0), crop_y=img.get("crop_y", 0.0),
-                    crop_w=img.get("crop_w", 1.0), crop_h=img.get("crop_h", 1.0),
-                    anchor_x=img.get("anchor_x", 0.5), anchor_y=img.get("anchor_y", 0.5),
+                    image_path=task["img"]["path"], out_path=task["out"], ffmpeg_path=ffmpeg_bin,
+                    width=OUTPUT_WIDTH, height=OUTPUT_HEIGHT, fps=FPS, duration=task["dur"],
+                    zoom_end=zoom_end, crop_x=task["img"].get("crop_x", 0.0), crop_y=task["img"].get("crop_y", 0.0),
+                    crop_w=task["img"].get("crop_w", 1.0), crop_h=task["img"].get("crop_h", 1.0),
+                    anchor_x=task["img"].get("anchor_x", 0.5), anchor_y=task["img"].get("anchor_y", 0.5),
                     abort_event=self.abort_event, progress_callback=progress_cb
                 )
                 
+            try:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(worker, t) for t in tasks]
+                    for future in concurrent.futures.as_completed(futures):
+                        future.result()
+            except InterruptedError:
+                pass
+                
             if self.abort_event.is_set():
                 for v in temp_videos:
-                    if os.path.exists(v): os.remove(v)
+                    if os.path.exists(v):
+                        try: os.remove(v)
+                        except OSError: pass
                 return
                 
             # Phase 2: FFmpeg xfade
@@ -228,35 +251,57 @@ class VideoConverter(QObject):
                 total_duration = (num_images * photo_duration) + ((num_images - 1) * transition_duration) + tail_duration
 
             # Phase 1: Python rendering
+            max_workers = min(4, max(1, (os.cpu_count() or 2) - 1))
+            tasks = []
+            total_frames_overall = 0
+            
             for i, img in enumerate(images_data):
-                if self.abort_event.is_set():
-                    break
-                    
-                temp_vid = os.path.join(temp_dir, f"passafotos_temp_prev_{int(time.time()*1000)}_{i}.mp4")
+                temp_vid = os.path.join(self.temp_dir, f"passafotos_temp_prev_{int(time.time()*1000)}_{i}.mp4")
                 temp_videos.append(temp_vid)
                 
                 dur = photo_duration if num_images == 1 else (photo_duration + transition_duration if i == 0 or i == num_images - 1 else photo_duration + 2 * transition_duration)
                 if i == num_images - 1:
                     dur += tail_duration
-                total_frames = int(dur * preview_fps)
+                frames = int(dur * preview_fps)
+                total_frames_overall += frames
+                tasks.append({"img": img, "out": temp_vid, "dur": dur, "frames": frames})
                 
-                def progress_cb(frame_idx, idx=i):
-                    base_progress = (idx / num_images)
-                    current_progress = (frame_idx / max(1, total_frames)) * (1.0 / num_images)
-                    self.progressUpdated.emit(base_progress + current_progress, "Generant frames amb QPainter (1/2)")
-                
+            rendered_frames = [0]
+            progress_lock = threading.Lock()
+            
+            def worker(task):
+                if self.abort_event.is_set():
+                    return
+                    
+                def progress_cb(frame_idx):
+                    with progress_lock:
+                        rendered_frames[0] += 1
+                        if total_frames_overall > 0:
+                            progress = rendered_frames[0] / total_frames_overall
+                            self.progressUpdated.emit(progress, "Generant frames amb QPainter (1/2)")
+                            
                 render_video_clip(
-                    image_path=img["path"], out_path=temp_vid, ffmpeg_path=ffmpeg_bin,
-                    width=preview_width, height=preview_height, fps=preview_fps, duration=dur,
-                    zoom_end=zoom_end, crop_x=img.get("crop_x", 0.0), crop_y=img.get("crop_y", 0.0),
-                    crop_w=img.get("crop_w", 1.0), crop_h=img.get("crop_h", 1.0),
-                    anchor_x=img.get("anchor_x", 0.5), anchor_y=img.get("anchor_y", 0.5),
+                    image_path=task["img"]["path"], out_path=task["out"], ffmpeg_path=ffmpeg_bin,
+                    width=preview_width, height=preview_height, fps=preview_fps, duration=task["dur"],
+                    zoom_end=zoom_end, crop_x=task["img"].get("crop_x", 0.0), crop_y=task["img"].get("crop_y", 0.0),
+                    crop_w=task["img"].get("crop_w", 1.0), crop_h=task["img"].get("crop_h", 1.0),
+                    anchor_x=task["img"].get("anchor_x", 0.5), anchor_y=task["img"].get("anchor_y", 0.5),
                     abort_event=self.abort_event, progress_callback=progress_cb
                 )
                 
+            try:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(worker, t) for t in tasks]
+                    for future in concurrent.futures.as_completed(futures):
+                        future.result()
+            except InterruptedError:
+                pass
+                
             if self.abort_event.is_set():
                 for v in temp_videos:
-                    if os.path.exists(v): os.remove(v)
+                    if os.path.exists(v):
+                        try: os.remove(v)
+                        except OSError: pass
                 return
                 
             # Phase 2: FFmpeg xfade
