@@ -20,7 +20,7 @@ def _resolve_first_existing(*candidates: Path) -> Path | None:
 
 def get_ffmpeg_path() -> Path:
     runtime_root = get_runtime_root()
-    bundled = runtime_root / "ffmpeg" / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+    bundled = runtime_root / "ffmpeg" / "bin" / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
     fallback = Path(shutil.which("ffmpeg") or "")
     resolved = _resolve_first_existing(bundled, fallback)
     if resolved is not None:
@@ -30,7 +30,7 @@ def get_ffmpeg_path() -> Path:
 
 def get_ffprobe_path() -> Path:
     runtime_root = get_runtime_root()
-    bundled = runtime_root / "ffmpeg" / ("ffprobe.exe" if sys.platform == "win32" else "ffprobe")
+    bundled = runtime_root / "ffmpeg" / "bin" / ("ffprobe.exe" if sys.platform == "win32" else "ffprobe")
     fallback = Path(shutil.which("ffprobe") or "")
     resolved = _resolve_first_existing(bundled, fallback)
     if resolved is not None:

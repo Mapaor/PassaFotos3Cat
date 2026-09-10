@@ -8,7 +8,7 @@ except NameError:
 
 ENTRY = ROOT / 'src' / 'main.py'
 QML_SOURCE = ROOT / 'src' / 'qml'
-FFMPEG_SOURCE = ROOT / 'ffmpeg'
+FFMPEG_SOURCE = ROOT / 'ffmpeg' / 'bin'
 FONTS_SOURCE = ROOT / 'fonts'
 HOOK = ROOT / 'pyinstaller' / 'hook-qml.py'
 
