@@ -97,6 +97,8 @@ class VideoConverter(QObject):
                 temp_videos.append(temp_vid)
                 
                 dur = photo_duration if num_images == 1 else (photo_duration + transition_duration if i == 0 or i == num_images - 1 else photo_duration + 2 * transition_duration)
+                if i == num_images - 1:
+                    dur += tail_duration
                 total_frames = int(dur * FPS)
                 
                 def progress_cb(frame_idx, idx=i):
@@ -225,6 +227,8 @@ class VideoConverter(QObject):
                 temp_videos.append(temp_vid)
                 
                 dur = photo_duration if num_images == 1 else (photo_duration + transition_duration if i == 0 or i == num_images - 1 else photo_duration + 2 * transition_duration)
+                if i == num_images - 1:
+                    dur += tail_duration
                 total_frames = int(dur * preview_fps)
                 
                 def progress_cb(frame_idx, idx=i):

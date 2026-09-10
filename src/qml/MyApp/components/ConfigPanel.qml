@@ -12,6 +12,7 @@ Rectangle {
     property real photoDuration: photoDurationSlider.value
     property real transitionDuration: transitionDurationSlider.value
     property real zoomEnd: zoomEndSlider.value
+    property real tailDuration: tailDurationSlider.value
 
     component PinkSlider: Slider {
         id: control
@@ -110,6 +111,23 @@ Rectangle {
                     to: 3.00
                     value: 1.20
                     stepSize: 0.05
+                }
+            }
+
+            ColumnLayout {
+                spacing: 2
+                Layout.fillWidth: true
+                Text {
+                    text: "Cua: " + tailDurationSlider.value.toFixed(0) + " s"
+                    color: "#000000"
+                }
+                PinkSlider {
+                    id: tailDurationSlider
+                    Layout.fillWidth: true
+                    from: 1.0
+                    to: 5.0
+                    value: 2.0
+                    stepSize: 1.0
                 }
             }
         }
