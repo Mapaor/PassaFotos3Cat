@@ -245,4 +245,18 @@ class VideoConverter(QObject):
         except Exception as e:
             self.previewFinished.emit(False, str(e))
 
+    @Slot(str)
+    def open_and_select_file(self, file_path: str):
+        import sys
+        file_path = _clean_path(file_path)
+        if not file_path or not os.path.exists(file_path):
+            return
+            
+        if sys.platform == 'win32':
+            subprocess.Popen(['explorer', f'/select,{os.path.normpath(file_path)}'])
+        elif sys.platform == 'darwin':
+            subprocess.Popen(['open', '-R', file_path])
+        else:
+            subprocess.Popen(['xdg-open', os.path.dirname(file_path)])
+
 
