@@ -68,30 +68,35 @@ def build_ffmpeg_slideshow_command(
             f"fps={current_fps},"
             f"setpts=PTS-STARTPTS,"
             f"settb=1/{current_fps},"
-            f"fps={current_fps}"
+            f"fps={current_fps},"
+            f"setsar=1"
             f"[v{i}]"
         )
         filters.append(filter_str)
         
-    # Xfade transitions
+    # Transitions
     if num_images > 1:
-        current_in = "[v0]"
-        current_offset = photo_duration
-        
-        for i in range(1, num_images):
-            next_in = f"[v{i}]"
-            out_name = f"[x{i}]" if i < num_images - 1 else "[v]"
+        if transition_duration > 0:
+            current_in = "[v0]"
+            current_offset = photo_duration
             
-            fade_filter = f"{current_in}{next_in}xfade=transition=fade:duration={transition_duration}:offset={current_offset}{out_name}"
-            
-            # For the last transition, add format
-            if i == num_images - 1:
-                fade_filter = f"{current_in}{next_in}xfade=transition=fade:duration={transition_duration}:offset={current_offset},format=yuv420p{out_name}"
-            
-            filters.append(fade_filter)
-            
-            current_in = out_name
-            current_offset += (photo_duration + transition_duration)
+            for i in range(1, num_images):
+                next_in = f"[v{i}]"
+                out_name = f"[x{i}]" if i < num_images - 1 else "[v]"
+                
+                fade_filter = f"{current_in}{next_in}xfade=transition=fade:duration={transition_duration}:offset={current_offset}{out_name}"
+                
+                # For the last transition, add format
+                if i == num_images - 1:
+                    fade_filter = f"{current_in}{next_in}xfade=transition=fade:duration={transition_duration}:offset={current_offset},format=yuv420p{out_name}"
+                
+                filters.append(fade_filter)
+                
+                current_in = out_name
+                current_offset += (photo_duration + transition_duration)
+        else:
+            concat_inputs = "".join(f"[v{i}]" for i in range(num_images))
+            filters.append(f"{concat_inputs}concat=n={num_images}:v=1:a=0,format=yuv420p[v]")
     else:
         filters.append("[v0]format=yuv420p[v]")
 
