@@ -86,7 +86,7 @@ def render_video_clip(
         "-i", "-",
         "-c:v", "libx264",
         "-preset", "ultrafast",
-        "-crf", "0",
+        "-crf", "12",
         "-pix_fmt", "yuv420p", # Ensures output is compatible with final xfade/concat
         str(out_path)
     ]
