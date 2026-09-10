@@ -136,7 +136,7 @@ Window {
             canConvert: hasImages && !mainWindow.isConverting
 
             onPreviewClicked: {
-                footerPanel.setStatus("Generant preview ràpida...", "white");
+                footerPanel.setStatus("Preparant FFmpeg...", "white");
                 mainWindow.isConverting = true;
                 footerPanel.setProgress(0);
 
@@ -159,7 +159,7 @@ Window {
             }
 
             onConvertClicked: {
-                footerPanel.setStatus("Generant...", "white");
+                footerPanel.setStatus("Preparant FFmpeg...", "white");
                 mainWindow.isConverting = true;
                 footerPanel.setProgress(0);
 
@@ -222,6 +222,13 @@ Window {
         target: videoConverter
 
         function onProgressUpdated(percent) {
+            if (percent > 0) {
+                if (footerPanel.currentStatusText === "Preparant FFmpeg...") {
+                    footerPanel.setStatus("Generant...", "white");
+                } else if (footerPanel.currentStatusText === "Preparant previsualització...") {
+                    footerPanel.setStatus("Generant previsualització...", "white");
+                }
+            }
             footerPanel.setProgress(percent);
         }
 
