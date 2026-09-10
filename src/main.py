@@ -2,6 +2,8 @@ import sys
 import os
 from pathlib import Path
 
+__version__ = "1.2.0" # App version
+
 os.environ["QT_QUICK_CONTROLS_STYLE"] = "Basic"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
