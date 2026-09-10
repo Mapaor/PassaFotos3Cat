@@ -155,7 +155,7 @@ Window {
                 }
                 let jsonString = JSON.stringify(data);
 
-                videoConverter.preview_slideshow(jsonString, configPanel.photoDuration, configPanel.transitionDuration, configPanel.zoomEnd);
+                videoConverter.preview_slideshow(jsonString, configPanel.photoDuration, configPanel.transitionDuration, configPanel.zoomEnd, configPanel.tailDuration);
             }
 
             onConvertClicked: {
@@ -179,7 +179,7 @@ Window {
                 }
                 let jsonString = JSON.stringify(data);
 
-                videoConverter.convert_slideshow(jsonString, mainWindow.outputDir, mainWindow.outputName, configPanel.photoDuration, configPanel.transitionDuration, configPanel.zoomEnd);
+                videoConverter.convert_slideshow(jsonString, mainWindow.outputDir, mainWindow.outputName, configPanel.photoDuration, configPanel.transitionDuration, configPanel.zoomEnd, configPanel.tailDuration);
             }
         }
     }
@@ -221,13 +221,9 @@ Window {
     Connections {
         target: videoConverter
 
-        function onProgressUpdated(percent) {
+        function onProgressUpdated(percent, text) {
             if (percent > 0) {
-                if (footerPanel.currentStatusText === "Preparant FFmpeg...") {
-                    footerPanel.setStatus("Generant...", "white");
-                } else if (footerPanel.currentStatusText === "Preparant previsualització...") {
-                    footerPanel.setStatus("Generant previsualització...", "white");
-                }
+                footerPanel.setStatus(text, "white");
             }
             footerPanel.setProgress(percent);
         }
